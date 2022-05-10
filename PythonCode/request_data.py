@@ -1,6 +1,6 @@
 import datetime
 from tinydb import TinyDB, Query
-
+#
 
 def get_data(datab, qry, datatype=None):
     '''
