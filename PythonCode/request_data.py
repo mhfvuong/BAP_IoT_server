@@ -1,5 +1,5 @@
 import datetime
-from tinydb import TinyDB, Query
+from tinydb import TinyDB
 
 
 def get_data(datab, datatype=None):
@@ -17,5 +17,4 @@ def get_data(datab, datatype=None):
 
 if __name__ == '__main__':
     db = TinyDB('db.json')
-    # qr = Query()
     get_data(db, datatype='Temperature')
