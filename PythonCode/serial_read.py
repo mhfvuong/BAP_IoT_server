@@ -13,7 +13,10 @@ def store_data(all_data):
     date = datetime.today().strftime('%d-%m-%Y %H:%M:%S')
     data_type = id_type[all_data[5]]
     sensor_data = data_format[data_type](all_data[6])
-    db.insert({'Date': date, data_type: sensor_data})
+    if db.search(user['Date'] == date):
+        db.update({data_type: sensor_data}, user['Date'] == date)
+    else:
+        db.insert({'Date': date, data_type: sensor_data})
     print(date, ' - ', data_type, ': ', sensor_data)
 
 
@@ -34,7 +37,7 @@ def main():
     data_format = {'Temperature': process_data, 'Humidity': process_data}
 
     ser = serial.Serial('/dev/ttyACM0',
-                    baudrate=115200, timeout=1)
+                    baudrate=115200, timeout=0.1)
     sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser))
     while True:
         text = sio.readline()
