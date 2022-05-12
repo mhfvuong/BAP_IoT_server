@@ -5,8 +5,8 @@ from tinydb import TinyDB
 def get_data(datab, datatype=None):
     '''
     input:
-    datab = database, qry = Query, datatype = what data it wants
-    takes the data logged from 10 seconds ago and returns it
+    datab = database, datatype = what data it wants
+    Needs a datatype to return most recently logged data
     '''
     d_id = datab.all()[-1].doc_id
     requested_data = datab.get(doc_id=d_id)
