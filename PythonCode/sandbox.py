@@ -65,7 +65,7 @@ async def mainloop():
     global process_func
     global todo
 
-    db = TinyDB('db.json')
+    db = TinyDB('testdb.json')
     db.truncate()
     User = Query()
     prop_id_translation = {'0x75': 'Temperature', '0xa7': 'Humidity'}
