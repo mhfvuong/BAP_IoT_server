@@ -5,6 +5,14 @@ from datetime import datetime
 import serial_asyncio
 import globals
 
+from request_data import get_data, get_most_recent
+
+from tkinter import *
+from tkinter import ttk
+
+root = None
+frm = None
+
 
 def store(prop_id, data):
     #print('Processing data...')
@@ -40,7 +48,13 @@ async def message_handler(msg):
             prop_id = parsed_msg[5]
             data = parsed_msg[6]
             store(prop_id, data)
-        elif parsed_msg[2] == 'REQ:':
+            
+            temp = get_most_recent('Temperature')
+            hum = get_most_recent('Humidity')
+            ttk.Label(frm, text=f'Temperature: {temp}, Humidiy: {hum}').grid(column=0, row=0)
+            root.update()
+            
+        elif parsed_msg[2] == b'REQ:':
             # request type not implemented, currently same as data message
             #print('request message')
             prop_id = parsed_msg[5]
@@ -58,8 +72,16 @@ async def mainloop():
 #    global prop_id_translation
 #    global process_func
 #    global todo
+    global root
+    global frm
     
     reader, writer = await serial_asyncio.open_serial_connection(url='/dev/ttyACM0', baudrate=115200)
+    
+    root = Tk()
+    frm = ttk.Frame(root, padding=10)
+    frm.grid()
+    ttk.Label(frm, text='Temperature: ..., Humidiy: ...').grid(column=0, row=0)
+    root.update()
 
 #    db = TinyDB('testdb.json')
 #    globals.db.truncate()
