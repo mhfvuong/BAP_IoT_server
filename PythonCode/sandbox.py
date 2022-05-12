@@ -7,12 +7,12 @@ import globals
 
 
 def store(prop_id, data):
-    print('Processing data...')
+    #print('Processing data...')
     date = datetime.today().strftime('%d-%m-%Y %H:%M:%S')
     data_type = globals.prop_id_translation[prop_id]
     sensor_data = globals.process_func[data_type](data)
-    print('Storing data...')
-    db.upsert({'Date': date, data_type: sensor_data}, globals.User.Date == date)
+    #print('Storing data...')
+    globals.db.upsert({'Date': date, data_type: sensor_data}, globals.User.Date == date)
     print(date, ' - ', data_type, ': ', sensor_data)
 
 
@@ -32,17 +32,17 @@ async def get_message():
 
 # identify message type and pass to appropriate function
 async def message_handler(msg):
-    print('decoding message...')
+    #print('decoding message...')
     parsed_msg = msg.split()
     try:
-        if parsed_msg[2] == 'DATA:':
-            print('data message')
+        if parsed_msg[2] == b'DATA:':
+            #print('data message')
             prop_id = parsed_msg[5]
             data = parsed_msg[6]
             store(prop_id, data)
         elif parsed_msg[2] == 'REQ:':
             # request type not implemented, currently same as data message
-            print('request message')
+            #print('request message')
             prop_id = parsed_msg[5]
             data = parsed_msg[6]
             store(prop_id, data)
@@ -67,11 +67,12 @@ async def mainloop():
 #    prop_id_translation = {'0x75': 'Temperature', '0xa7': 'Humidity'}
 #    process_func = {'Temperature': divide, 'Humidity': divide}
 #    todo = set()
+    i = 0
 
-    for i in range(100):
+    while True:
         # wait for a new message
         msg = await reader.readline()
-        print(msg)
+        #print(msg)
 
         # add the message to a list of task to be completed
         task = asyncio.create_task(message_handler(msg), name=f'{i}')
@@ -81,13 +82,14 @@ async def mainloop():
         # and remove those tasks from the list
         globals.todo.intersection_update(pending)
         print('Pending tasks: ', len(globals.todo))
+        i+= 1
 
     # wait for all tasks to be completed before exiting the program
-    while len(todo):
+    while len(globals.todo):
         print('Waiting for all tasks to finish...')
         done, _pending = await asyncio.wait(globals.todo, timeout=1)
         globals.todo.difference_update(done)
-        msg_ids = (t.get_name() for t in todo)
+        msg_ids = (t.get_name() for t in globals.todo)
         print(f'{len(globals.todo)}: ' + ', '.join(sorted(msg_ids)))
 
 

@@ -14,8 +14,8 @@ def store_data(all_data):
     date = datetime.today().strftime('%d-%m-%Y %H:%M:%S')
     data_type = globals.prop_id_translation[all_data[5]]
     sensor_data = globals.process_func[data_type](all_data[6])
-    if globals.db.search(user['Date'] == date):
-        globals.db.update({data_type: sensor_data}, user['Date'] == date)
+    if globals.db.search(globals.User['Date'] == date):
+        globals.db.update({data_type: sensor_data}, globals.User['Date'] == date)
     else:
         globals.db.insert({'Date': date, data_type: sensor_data})
     print(date, ' - ', data_type, ': ', sensor_data)
