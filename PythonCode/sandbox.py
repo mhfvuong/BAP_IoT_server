@@ -98,7 +98,7 @@ async def mainloop():
     frm = ttk.Frame(root, padding=10)
     frm.grid()
     ttk.Label(frm, text='Temperature: ..., Humidiy: ...').grid(column=0, row=0)
-    ttk.Button(frm, text='Exit', command=exit_gui).grid(column=1, row=0)
+    ttk.Button(frm, text='Exit', command=exit_gui).grid(column=0, row=1)
     asyncio.create_task(gui_loop(), name='gui_loop')
 
 #    db = TinyDB('testdb.json')
