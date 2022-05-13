@@ -12,6 +12,7 @@ from tkinter import ttk
 
 root = None
 frm = None
+loop = None
 
 
 def store(prop_id, data):
@@ -66,6 +67,19 @@ async def message_handler(msg):
         print('message too short')
 
 
+async def gui_loop():
+    root.update()
+    await asyncio.sleep(0.1)
+    if loop:
+        asyncio.create_task(gui_loop(), name='gui_loop')
+
+
+def exit_gui():
+    global loop
+    loop = False
+    root.destroy()
+
+
 async def mainloop():
 #    global db
 #    global User
@@ -74,6 +88,9 @@ async def mainloop():
 #    global todo
     global root
     global frm
+    global loop
+
+    loop = True
     
     reader, writer = await serial_asyncio.open_serial_connection(url='/dev/ttyACM0', baudrate=115200)
     
@@ -81,7 +98,8 @@ async def mainloop():
     frm = ttk.Frame(root, padding=10)
     frm.grid()
     ttk.Label(frm, text='Temperature: ..., Humidiy: ...').grid(column=0, row=0)
-    root.update()
+    ttk.Button(frm, text='Exit', command=exit_gui).grid(column=1, row=0)
+    asyncio.create_task(gui_loop(), name='gui_loop')
 
 #    db = TinyDB('testdb.json')
 #    globals.db.truncate()
@@ -91,7 +109,7 @@ async def mainloop():
 #    todo = set()
     i = 0
 
-    while True:
+    while loop:
         # wait for a new message
         msg = await reader.readline()
         #print(msg)
@@ -104,7 +122,7 @@ async def mainloop():
         # and remove those tasks from the list
         globals.todo.intersection_update(pending)
         print('Pending tasks: ', len(globals.todo))
-        i+= 1
+        i += 1
 
     # wait for all tasks to be completed before exiting the program
     while len(globals.todo):
