@@ -37,10 +37,10 @@ class GUI:
         if loop:
             asyncio.create_task(self.gui_loop(), name='gui_loop')
 
-    def update_temp(self):
+    async def update_temp(self):
         self.temp = get_most_recent('Temperature')
 
-    def update_hum(self):
+    async def update_hum(self):
         self.hum = get_most_recent('Humidity')
 
     def exit_gui(self):
@@ -52,7 +52,7 @@ class GUI:
 def publish(topic):
     global sub_list
     for sub in sub_list[topic]:
-        sub()
+        asyncio.create_task(sub(), name=f'{topic}_events')
 
 
 def store(prop_id, data):
