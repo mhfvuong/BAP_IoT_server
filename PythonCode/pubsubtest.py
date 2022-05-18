@@ -2,6 +2,9 @@ import asyncio
 import random
 from datetime import datetime
 import globals
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 
 from request_data import get_most_recent
 
@@ -20,9 +23,17 @@ class GUI:
         self.frm.grid()
         ttk.Label(self.frm, text='Temperature: ..., Humidity: ...').grid(column=0, row=0)
         ttk.Button(self.frm, text='Exit', command=self.exit_gui).grid(column=0, row=1)
+        self.fig = Figure(figsize=(5, 4), dpi=100)
+        self.a = self.fig.add_subplot(111)
+        self.a.plot()
+        self.canvas = FigureCanvasTkAgg(self.fig, self.frm)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().grid(column=2, row=0)
 
-        self.temp = 0
-        self.hum = 0
+        self.temp = [0]
+        self.hum = [0]
+        self.temp_time = ['0']
+        self.hum_time = ['0']
 
         global sub_list
         sub_list['Temperature'].append(self.update_temp)
@@ -31,17 +42,32 @@ class GUI:
 
     async def gui_loop(self):
         global loop
-        ttk.Label(self.frm, text=f'Temperature: {self.temp}, Humidity: {self.hum}').grid(column=0, row=0)
+        ttk.Label(self.frm, text=f'Temperature: {self.temp[-1]}, Humidity: {self.hum[-1]}').grid(column=0, row=0)
+        self.a.clear()
+        self.a.plot(self.temp_time, self.temp, color='r', label='Temperature')
+        self.a.plot(self.hum_time, self.hum, color='b', label='Humidity')
+        self.a.legend()
         self.root.update()
         await asyncio.sleep(0.1)
         if loop:
-            asyncio.create_task(self.gui_loop(), name='gui_loop')
+            task = asyncio.create_task(self.gui_loop(), name='gui_loop')
+            globals.todo.add(task)
 
     async def update_temp(self):
-        self.temp = get_most_recent('Temperature')
+        if len(self.temp) >= 10:
+            self.temp.pop(0)
+        self.temp.append(get_most_recent('Temperature'))
+        if len(self.temp_time) >= 10:
+            self.temp_time.pop(0)
+        self.temp_time.append(datetime.today().strftime('%M:%S'))
 
     async def update_hum(self):
-        self.hum = get_most_recent('Humidity')
+        if len(self.hum) >= 10:
+            self.hum.pop(0)
+        self.hum.append(get_most_recent('Humidity'))
+        if len(self.hum_time) >= 10:
+            self.hum_time.pop(0)
+        self.hum_time.append(datetime.today().strftime('%M:%S'))
 
     def exit_gui(self):
         global loop
@@ -52,7 +78,8 @@ class GUI:
 def publish(topic):
     global sub_list
     for sub in sub_list[topic]:
-        asyncio.create_task(sub(), name=f'{topic}_events')
+        task = asyncio.create_task(sub(), name=f'{topic}_events')
+        globals.todo.add(task)
 
 
 def store(prop_id, data):
