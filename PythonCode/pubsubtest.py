@@ -45,8 +45,9 @@ class GUI:
         ttk.Label(self.frm, text=f'Temperature: {self.temp[-1]}, Humidity: {self.hum[-1]}').grid(column=0, row=0)
         self.a.clear()
         self.a.plot(self.temp_time, self.temp, color='r', label='Temperature')
-        self.a.plot(self.hum_time, self.hum, color='b', label='Humidity')
-        self.a.legend()
+        #self.a.plot(self.hum_time, self.hum, color='b', label='Humidity')
+        #self.a.legend()
+        self.canvas.draw()
         self.root.update()
         await asyncio.sleep(0.1)
         if loop:
@@ -93,7 +94,7 @@ def store(prop_id, data):
 
 # simulates waiting for a message with a random wait time of 0, 1, or 2 seconds
 async def get_message():
-    wait_time = random.randint(0, 2)
+    wait_time = 1
     print('Message wait time: ', wait_time)
     await asyncio.sleep(wait_time)
     # generate a random message within the format
