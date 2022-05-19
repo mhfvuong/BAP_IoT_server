@@ -1,5 +1,5 @@
 import asyncio
-import serial_asyncio
+#import serial_asyncio
 import random
 
 from GUI import GUI
@@ -14,7 +14,7 @@ class Server:
         self.todo = set()
         self.prop_id_translation = {'0x75': 'Temperature', '0xa7': 'Humidity'}
 
-        self.reader, self.writer = await serial_asyncio.open_serial_connection(url='/dev/ttyACM0', baudrate=115200)
+        #self.reader, self.writer = await serial_asyncio.open_serial_connection(url='/dev/ttyACM0', baudrate=115200)
 
         self.db = Database()
         self.publisher = Publisher(self.todo)
@@ -31,7 +31,7 @@ class Server:
 
         # generate a random message within the format
         msg = f'color clock {random.choice(["DATA", "REQ"])}: pubaddr receivedaddr {random.choice(["0x75", "0xa7"])} ' \
-              f'{random.randint(0, 100)} END'
+              f'{random.randint(100, 3000)} END'
         print(msg)
         return msg
 
@@ -66,7 +66,8 @@ class Server:
         while self.loop:
             print(self.todo)
             # wait for a new message
-            msg = await self.reader.readline()
+            #msg = await self.reader.readline()
+            msg = await self.get_message()
 
             # add the message to a list of task to be completed
             self.todo.add(asyncio.create_task(self.message_handler(msg), name=f'{i}'))

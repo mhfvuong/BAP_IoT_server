@@ -14,6 +14,7 @@ class GUI:
         self.run_task = None
 
         self.root = Tk()
+        self.root.protocol('WM_DELETE_WINDOW', self.close_gui)
 
         self.frm = ttk.Frame(self.root, padding=10)
         self.frm.grid()
