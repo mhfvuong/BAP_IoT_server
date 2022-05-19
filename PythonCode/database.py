@@ -4,7 +4,7 @@ from datetime import datetime
 
 class Database:
     def __init__(self):
-        self.db = TinyDB('data/testdb')
+        self.db = TinyDB('data/testdb.json')
         self.db.truncate()
         self.User = Query()
 

@@ -41,14 +41,14 @@ class Server:
 
         try:
             if parsed_msg[2] == 'DATA:':
-                data_type = self.prop_id_translation[parsed_msg[5]]
+                data_type = self.prop_id_translation[str(parsed_msg[5])]
                 data = self.preprocessing.process_func[data_type](parsed_msg[6])
                 self.db.store(data_type, data)
                 self.publisher.publish(data_type)
 
             elif parsed_msg[2] == 'REQ:':
                 # request type not implemented, currently same as data message
-                data_type = self.prop_id_translation[parsed_msg[5]]
+                data_type = self.prop_id_translation[str(parsed_msg[5])]
                 data = self.preprocessing.process_func[data_type](parsed_msg[6])
                 self.db.store(data_type, data)
                 self.publisher.publish(data_type)
