@@ -30,7 +30,7 @@ class GUI:
         #self.temp_plot = self.fig.add_subplot(211)
         #self.temp_plot.title.set_text('Temperature')
         #self.temp_plot.plot()
-#
+
         #self.hum_plot = self.fig.add_subplot(212)
         #self.hum_plot.title.set_text('Humidity')
         #self.hum_plot.plot()
