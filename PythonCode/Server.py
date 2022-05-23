@@ -60,7 +60,7 @@ class Server:
             print('message too short')
 
     async def run(self):
-        await self.gui.run(self.loop)
+        await self.gui.run()
         i = 0
 
         while self.loop:

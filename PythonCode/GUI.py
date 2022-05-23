@@ -13,7 +13,7 @@ class GUI:
         self.db = db
         self.publisher = publisher
         self.todo = todo
-        self.tasks = None
+        self.gui_tasks = [None, None]
         self.analysis = Analysis(self.db)
 
         self.root = Tk()
@@ -56,7 +56,14 @@ class GUI:
         publisher.sub_list['Temperature'].append(self.update_temp)
         publisher.sub_list['Humidity'].append(self.update_hum)
 
-    async def run(self, loop):
+    async def run(self):
+        self.gui_tasks[0] = asyncio.create_task(self.run_loop(), name='gui_loop')
+        self.todo.add(self.gui_tasks[0])
+
+        self.gui_tasks[1] = asyncio.create_task(self.update_avg(), name='avg_graph_loop')
+        self.todo.add(self.gui_tasks[1])
+
+    async def run_loop(self):
         ttk.Label(self.frm, text=f'Temperature: {self.temp[-1]}, Humidity: {self.hum[-1]}').grid(column=0, row=0)
 
         #self.temp_plot.clear()
@@ -68,17 +75,20 @@ class GUI:
         #self.hum_plot.title.set_text('Humidity')
 
         self.avg_plot.clear()
-        self.avg_plot.plot(self.avg_time, self.avg_temp)
-        self.avg_plot.title.set_text('Average temperature')
+        self.avg_plot.plot(self.avg_time, self.avg_temp, color='r', label='Temperature')
+        self.avg_plot.plot(self.avg_time, self.avg_hum, color='b', label='Humidity')
+        #self.avg_plot.xlabel('Time [H:M]')
+        #self.avg_plot.ylabel('Magnitude')
+        self.avg_plot.title.set_text('Average temperature and humidity')
+        self.avg_plot.legend()
 
         self.canvas.draw()
         self.root.update()
 
         await asyncio.sleep(0.1)
 
-        if loop:
-            self.run_task = asyncio.create_task(self.run(loop), name='gui_loop')
-            self.todo.add(self.run_task)
+        self.gui_tasks[0] = asyncio.create_task(self.run_loop(), name='gui_loop')
+        self.todo.add(self.gui_tasks[0])
 
     async def update_temp(self):
         if len(self.temp) >= 10:
@@ -111,7 +121,12 @@ class GUI:
             self.avg_time.pop(0)
         self.avg_time.append(datetime.today().strftime('%H:%M'))
 
+        await asyncio.sleep(60)
+        self.gui_tasks[1] = asyncio.create_task(self.update_avg(), name='avg_graph_loop')
+        self.todo.add(self.gui_tasks[1])
+
     def close_gui(self):
         self.publisher.publish('Close')
-        self.run_task.cancel()
+        for task in self.gui_tasks:
+            task.cancel()
         self.root.destroy()
