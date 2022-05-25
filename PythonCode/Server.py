@@ -12,6 +12,7 @@ from GUI import GUI
 from database import Database
 from pubsub import Publisher
 from preprocessing import Preprocessing
+from webapp import WebApp
 
 
 class Server:
@@ -28,6 +29,7 @@ class Server:
         self.publisher = Publisher(self.todo)
         self.preprocessing = Preprocessing()
         self.gui = GUI(self.db, self.publisher, self.todo)
+        self.webapp = WebApp('webapp', self.db, self.publisher, self.todo)
 
         self.publisher.sub_list['Close'].append(self.close_server)
 
@@ -74,6 +76,7 @@ class Server:
                 self.operation_mode = False
 
         await self.gui.run()
+        await self.webapp.run()
         i = 0
 
         while self.loop:
