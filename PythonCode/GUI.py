@@ -22,21 +22,15 @@ class GUI:
         self.frm = ttk.Frame(self.root, padding=10)
         self.frm.grid()
 
-        ttk.Label(self.frm, text='Temperature: ..., Humidity: ...').grid(column=0, row=0)
+        ttk.Label(self.frm, text='Temperature: ..., Humidity: ..., Volume: ...').grid(column=0, row=0)
         ttk.Button(self.frm, text='Exit', command=self.close_gui).grid(column=0, row=2)
 
         self.fig = Figure(figsize=(5, 4), dpi=100)
 
-        #self.temp_plot = self.fig.add_subplot(211)
-        #self.temp_plot.title.set_text('Temperature')
-        #self.temp_plot.plot()
-
-        #self.hum_plot = self.fig.add_subplot(212)
-        #self.hum_plot.title.set_text('Humidity')
-        #self.hum_plot.plot()
-
         self.avg_plot = self.fig.add_subplot(111)
-        self.avg_plot.title.set_text('Average temperature')
+        self.avg_plot.title.set_text('Average temperature and humidity')
+        self.avg_plot.set_xlabel('Time [H:M]')
+        self.avg_plot.set_ylabel('Magnitude')
         self.avg_plot.plot()
 
         self.canvas = FigureCanvasTkAgg(self.fig, self.frm)
@@ -49,12 +43,15 @@ class GUI:
         self.hum = [0]
         self.hum_time = ['0']
 
+        self.audio = 0
+
         self.avg_temp = [0]
         self.avg_hum = [0]
         self.avg_time = ['0']
 
         publisher.sub_list['Temperature'].append(self.update_temp)
         publisher.sub_list['Humidity'].append(self.update_hum)
+        publisher.sub_list['Audio'].append(self.update_audio)
 
     async def run(self):
         self.gui_tasks[0] = asyncio.create_task(self.run_loop(), name='gui_loop')
@@ -64,21 +61,15 @@ class GUI:
         self.todo.add(self.gui_tasks[1])
 
     async def run_loop(self):
-        ttk.Label(self.frm, text=f'Temperature: {self.temp[-1]}, Humidity: {self.hum[-1]}').grid(column=0, row=0)
-
-        #self.temp_plot.clear()
-        #self.temp_plot.plot(self.temp_time, self.temp, color='r', label='Temperature')
-        #self.temp_plot.title.set_text('Temperature')
-#
-        #self.hum_plot.clear()
-        #self.hum_plot.plot(self.hum_time, self.hum, color='b', label='Humidity')
-        #self.hum_plot.title.set_text('Humidity')
+        ttk.Label(self.frm, text=f'Temperature: {self.temp[-1]}, '
+                                 f'Humidity: {self.hum[-1]}, '
+                                 f'Volume: {self.audio}').grid(column=0, row=0)
 
         self.avg_plot.clear()
         self.avg_plot.plot(self.avg_time, self.avg_temp, color='r', label='Temperature')
         self.avg_plot.plot(self.avg_time, self.avg_hum, color='b', label='Humidity')
-        #self.avg_plot.xlabel('Time [H:M]')
-        #self.avg_plot.ylabel('Magnitude')
+        self.avg_plot.set_xlabel('Time [H:M]')
+        self.avg_plot.set_ylabel('Magnitude')
         self.avg_plot.title.set_text('Average temperature and humidity')
         self.avg_plot.legend()
 
@@ -107,6 +98,9 @@ class GUI:
         if len(self.hum_time) >= 10:
             self.hum_time.pop(0)
         self.hum_time.append(datetime.today().strftime('%M:%S'))
+
+    async def update_audio(self):
+        self.audio = self.db.get_most_recent('Audio')
 
     async def update_avg(self):
         if len(self.avg_temp) >= 10:
