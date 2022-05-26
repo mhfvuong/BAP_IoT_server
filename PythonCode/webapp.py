@@ -26,7 +26,7 @@ class WebApp:
     async def run(self):
         self.app_task = asyncio.create_task(self.app.run_task(host='0.0.0.0', port=80, debug=False))
         self.todo.add(self.app_task)
-        self.app.add_url_rule('/', 'data_page', self.data_page)
+        self.app.add_url_rule('/', 'data_page', self.data_page, methods=['GET'])
 
     async def data_page(self):
         templatedata = {'title': 'Data page', 'temp': self.temp, 'hum': self.hum, 'vol': self.vol}

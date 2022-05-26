@@ -7,7 +7,6 @@ except ModuleNotFoundError:
     print('Module serial_asyncio not found, continuing in test mode...')
     operation_mode = False
 import random
-
 from GUI import GUI
 from database import Database
 from pubsub import Publisher
