@@ -1,5 +1,5 @@
 import asyncio
-from quart import Quart, render_template
+from quart import Quart, render_template, request
 
 
 class WebApp:
@@ -26,11 +26,22 @@ class WebApp:
     async def run(self):
         self.app_task = asyncio.create_task(self.app.run_task(host='0.0.0.0', port=80, debug=False))
         self.todo.add(self.app_task)
-        self.app.add_url_rule('/', 'data_page', self.data_page, methods=['GET'])
+        self.app.add_url_rule('/', 'main_page', self.main_page)
+        self.app.add_url_rule('/exit', 'close_server', self.close_server)
+        self.app.add_url_rule('/data_page', 'data_page', self.data_page, methods=['POST'])
+
+    async def main_page(self):
+        templatedata = {'title': 'Main page', 'temp': self.temp, 'hum': self.hum, 'vol': self.vol}
+        return await render_template('test.html', **templatedata)
 
     async def data_page(self):
-        templatedata = {'title': 'Data page', 'temp': self.temp, 'hum': self.hum, 'vol': self.vol}
-        return await render_template('test.html', **templatedata)
+        date = (await request.form)['date']
+        result = self.db.db.search(self.db.User['Date'] == date)
+        return f'{result} <br/> <a href="/">Back</a>'
+
+    async def close_server(self):
+        self.publisher.publish('Close')
+        return 'Server closed'
 
     async def update_temp(self):
         self.temp = self.db.get_most_recent('Temperature')

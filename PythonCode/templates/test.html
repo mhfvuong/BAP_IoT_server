@@ -2,13 +2,26 @@
    <head>
       <title>{{ title }}</title>
       <link rel="stylesheet" href="../static/style.css/">
+      <link rel="">
    </head>
    <body>
-      <h2>Temperature: {{ temp }}</h2>
-      <h2>Humidity: {{ hum }}</h2>
-      <h2>Volume: {{ vol }}</h2>
+   <h3>Current data</h3>
+   <p>
+      Temperature: {{ temp }} <br />
+      Humidity: {{ hum }} <br />
+      Volume: {{ vol }} <br />
+      <br />
+   <p>
+      <h3>Query:</h3>
+      <form action="/data_page" method="post">
+         Date: <input type="text" name="date" placeholder="d-m-Y H:M:S"> <br />
+         <input type="submit" name="form" value="submit" /> <br />
+      </form>
+      <br /> <br />
+   </p>
 
-   <input type="text" id="fname" name="fname"><br><br>
-   <input type="submit" value="Submit">
+   <p>
+      <button> <a href="/exit">Close server</a></button>
+   </p>
    </body>
 </html>

@@ -49,9 +49,10 @@ class GUI:
         self.avg_hum = [0]
         self.avg_time = ['0']
 
-        publisher.sub_list['Temperature'].append(self.update_temp)
-        publisher.sub_list['Humidity'].append(self.update_hum)
-        publisher.sub_list['Audio'].append(self.update_audio)
+        self.publisher.sub_list['Temperature'].append(self.update_temp)
+        self.publisher.sub_list['Humidity'].append(self.update_hum)
+        self.publisher.sub_list['Audio'].append(self.update_audio)
+        self.publisher.sub_list['Close'].append(self.exit)
 
     async def run(self):
         self.gui_tasks[0] = asyncio.create_task(self.run_loop(), name='gui_loop')
@@ -121,6 +122,8 @@ class GUI:
 
     def close_gui(self):
         self.publisher.publish('Close')
+
+    async def exit(self):
         for task in self.gui_tasks:
             task.cancel()
         self.root.destroy()
