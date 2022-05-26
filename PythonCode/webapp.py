@@ -41,7 +41,7 @@ class WebApp:
 
     async def close_server(self):
         self.publisher.publish('Close')
-        return 'Server closed'
+        return 'Server closed <br/> <a href="/">Back<a/>'
 
     async def update_temp(self):
         self.temp = self.db.get_most_recent('Temperature')
