@@ -32,7 +32,7 @@ class WebApp:
 
     async def main_page(self):
         templatedata = {'title': 'Main page', 'temp': self.temp, 'hum': self.hum, 'vol': self.vol}
-        return await render_template('test.html', **templatedata)
+        return await render_template('server.html', **templatedata)
 
     async def data_page(self):
         date = (await request.form)['date']
