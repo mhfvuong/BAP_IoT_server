@@ -4,9 +4,8 @@ from quart import Quart, render_template, request
 
 class WebApp:
     app = None
-
     def __init__(self, name, db, publisher, todo):
-        self.app = Quart(name)
+        self.app = Quart(name, template_folder='\var\www\html')
         self.db = db
         self.publisher = publisher
         self.todo = todo
@@ -16,7 +15,7 @@ class WebApp:
         self.temp = 0
         self.hum = 0
         self.vol = 0
-
+        
         publisher.sub_list['Temperature'].append(self.update_temp)
         publisher.sub_list['Humidity'].append(self.update_hum)
         publisher.sub_list['Audio'].append(self.update_vol)
@@ -32,7 +31,9 @@ class WebApp:
 
     async def main_page(self):
         templatedata = {'title': 'Main page', 'temp': self.temp, 'hum': self.hum, 'vol': self.vol}
-        return await render_template('server.html', **templatedata)
+        
+        return await render_template('index.html', **templatedata)
+        # return await render_template('server.html', **templatedata)
 
     async def data_page(self):
         date = (await request.form)['date']
