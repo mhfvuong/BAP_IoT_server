@@ -5,7 +5,7 @@ from quart import Quart, render_template, request
 class WebApp:
     app = None
     def __init__(self, name, db, publisher, todo):
-        self.app = Quart(name, template_folder='\var\www\html')
+        self.app = Quart(name)
         self.db = db
         self.publisher = publisher
         self.todo = todo
@@ -32,7 +32,7 @@ class WebApp:
     async def main_page(self):
         templatedata = {'title': 'Main page', 'temp': self.temp, 'hum': self.hum, 'vol': self.vol}
         
-        return await render_template('index.html', **templatedata)
+        return await render_template('/var/www/html/index.html', **templatedata)
         # return await render_template('server.html', **templatedata)
 
     async def data_page(self):
