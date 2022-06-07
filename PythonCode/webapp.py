@@ -1,11 +1,18 @@
 import asyncio
 from quart import Quart, render_template, request
+import os
 
 
 class WebApp:
     app = None
     def __init__(self, name, db, publisher, todo):
-        self.app = Quart(name)
+        template_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))))
+        template_dir = os.path.join(template_dir, 'var')
+        template_dir = os.path.join(template_dir, 'www')
+        template_dir = os.path.join(template_dir, 'html')
+        working = '/var/www/html'
+        print(working == template_dir)
+        self.app = Quart(name, template_folder=template_dir)
         self.db = db
         self.publisher = publisher
         self.todo = todo
@@ -21,7 +28,8 @@ class WebApp:
         publisher.sub_list['Audio'].append(self.update_vol)
 
         self.publisher.sub_list['Close'].append(self.exit)
-
+        
+        
     async def run(self):
         self.app_task = asyncio.create_task(self.app.run_task(host='0.0.0.0', port=80, debug=False))
         self.todo.add(self.app_task)
@@ -32,7 +40,7 @@ class WebApp:
     async def main_page(self):
         templatedata = {'title': 'Main page', 'temp': self.temp, 'hum': self.hum, 'vol': self.vol}
         
-        return await render_template('/var/www/html/index.html', **templatedata)
+        return await render_template('index.html', **templatedata)
         # return await render_template('server.html', **templatedata)
 
     async def data_page(self):
