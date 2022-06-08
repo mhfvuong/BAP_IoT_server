@@ -6,13 +6,7 @@ import os
 class WebApp:
     app = None
     def __init__(self, name, db, publisher, todo):
-       # template_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))))
-        #template_dir = os.path.join(template_dir, 'var')
-        #template_dir = os.path.join(template_dir, 'www')
-        #template_dir = os.path.join(template_dir, 'html')
-        #working = '/var/www/html'
-        #print(working == template_dir)
-        self.app = Quart(name)#, template_folder=template_dir)
+        self.app = Quart(name)
         self.db = db
         self.publisher = publisher
         self.todo = todo
@@ -39,8 +33,6 @@ class WebApp:
 
     async def main_page(self):
         templatedata = {'title': 'Main page', 'temp': self.temp, 'hum': self.hum, 'vol': self.vol}
-        
-        #return await render_template('index.html', **templatedata)
         return await render_template('server.html', **templatedata)
 
     async def data_page(self):
