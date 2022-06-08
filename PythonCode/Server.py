@@ -60,6 +60,9 @@ class Server:
                     self.db.store(data_type, data)
                     self.publisher.publish(data_type)
 
+            elif parsed_msg[0][0:2] == '011':
+                self.publisher.publish('Question')
+
             else:
                 print('message not supported')
 

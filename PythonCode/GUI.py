@@ -49,10 +49,13 @@ class GUI:
         self.avg_hum = [0]
         self.avg_time = ['0']
 
+        self.question = 0
+
         self.publisher.sub_list['Temperature'].append(self.update_temp)
         self.publisher.sub_list['Humidity'].append(self.update_hum)
         self.publisher.sub_list['Audio'].append(self.update_audio)
         self.publisher.sub_list['Close'].append(self.exit)
+        self.publisher.sub_list['Question'].append(self.update_question)
 
     async def run(self):
         self.gui_tasks[0] = asyncio.create_task(self.run_loop(), name='gui_loop')
@@ -62,9 +65,9 @@ class GUI:
         self.todo.add(self.gui_tasks[1])
 
     async def run_loop(self):
-        ttk.Label(self.frm, text=f'Temperature: {self.temp[-1]}, '
-                                 f'Humidity: {self.hum[-1]}, '
-                                 f'Volume: {self.audio}').grid(column=0, row=0)
+        #ttk.Label(self.frm, text=f'Temperature: {self.temp[-1]}, '
+        #                         f'Humidity: {self.hum[-1]}, '
+        #                         f'Volume: {self.audio}').grid(column=0, row=0)
 
         self.avg_plot.clear()
         self.avg_plot.plot(self.avg_time, self.avg_temp, color='r', label='Temperature')
@@ -102,6 +105,9 @@ class GUI:
 
     async def update_audio(self):
         self.audio = self.db.get_most_recent('Audio')
+
+    async def update_question(self):
+        self.question = 1
 
     async def update_avg(self):
         if len(self.avg_temp) >= 10:
