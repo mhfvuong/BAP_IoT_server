@@ -37,12 +37,13 @@ class WebApp:
 
     async def data_page(self):
         date = (await request.form)['date']
-        result = self.db.db.search(self.db.User['Date'] == date)
-        return f'{result} <br/> <a href="/">Back</a>'
+        templatedata = {'title': 'Data page', 'res': self.db.db.search(self.db.User['Date'] == date)}
+        return await render_template('datapage.html', **templatedata)
 
     async def close_server(self):
         self.publisher.publish('Close')
-        return 'Server closed <br/> <a href="/">Back<a/>'
+        templatedata = {'title': 'Exit page'}
+        return await render_template('exitpage.html', **templatedata)
 
     async def update_temp(self):
         self.temp = self.db.get_most_recent('Temperature')
