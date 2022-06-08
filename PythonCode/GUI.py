@@ -65,9 +65,9 @@ class GUI:
         self.todo.add(self.gui_tasks[1])
 
     async def run_loop(self):
-        #ttk.Label(self.frm, text=f'Temperature: {self.temp[-1]}, '
-        #                         f'Humidity: {self.hum[-1]}, '
-        #                         f'Volume: {self.audio}').grid(column=0, row=0)
+        ttk.Label(self.frm, text=f'Temperature: {self.temp[-1]}, '
+                                 f'Humidity: {self.hum[-1]}, '
+                                 f'Volume: {self.audio}').grid(column=0, row=0)
 
         self.avg_plot.clear()
         self.avg_plot.plot(self.avg_time, self.avg_temp, color='r', label='Temperature')
