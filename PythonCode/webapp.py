@@ -6,13 +6,13 @@ import os
 class WebApp:
     app = None
     def __init__(self, name, db, publisher, todo):
-        template_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))))
-        template_dir = os.path.join(template_dir, 'var')
-        template_dir = os.path.join(template_dir, 'www')
-        template_dir = os.path.join(template_dir, 'html')
-        working = '/var/www/html'
-        print(working == template_dir)
-        self.app = Quart(name, template_folder=template_dir)
+       # template_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))))
+        #template_dir = os.path.join(template_dir, 'var')
+        #template_dir = os.path.join(template_dir, 'www')
+        #template_dir = os.path.join(template_dir, 'html')
+        #working = '/var/www/html'
+        #print(working == template_dir)
+        self.app = Quart(name)#, template_folder=template_dir)
         self.db = db
         self.publisher = publisher
         self.todo = todo
@@ -31,7 +31,7 @@ class WebApp:
         
         
     async def run(self):
-        self.app_task = asyncio.create_task(self.app.run_task(host='0.0.0.0', port=80, debug=False))
+        self.app_task = asyncio.create_task(self.app.run_task())
         self.todo.add(self.app_task)
         self.app.add_url_rule('/', 'main_page', self.main_page)
         self.app.add_url_rule('/exit', 'close_server', self.close_server)
@@ -40,8 +40,8 @@ class WebApp:
     async def main_page(self):
         templatedata = {'title': 'Main page', 'temp': self.temp, 'hum': self.hum, 'vol': self.vol}
         
-        return await render_template('index.html', **templatedata)
-        # return await render_template('server.html', **templatedata)
+        #return await render_template('index.html', **templatedata)
+        return await render_template('server.html', **templatedata)
 
     async def data_page(self):
         date = (await request.form)['date']
