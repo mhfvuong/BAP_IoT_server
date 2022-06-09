@@ -1,3 +1,4 @@
+import tkinter
 from datetime import datetime
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -24,7 +25,7 @@ class GUI:
 
         self.dataLabel = ttk.Label(self.frm, text='Temperature: ..., Humidity: ...')
         self.dataLabel.grid(column=0, row=0)
-        ttk.Button(self.frm, text='Exit', command=self.close_gui).grid(column=0, row=2)
+        ttk.Button(self.frm, text='Exit', command=self.close_gui).grid(column=0, row=3)
 
         self.fig = Figure(figsize=(5, 4), dpi=100)
 
@@ -34,9 +35,15 @@ class GUI:
         self.avg_plot.set_ylabel('Magnitude')
         self.avg_plot.plot()
 
-        self.canvas = FigureCanvasTkAgg(self.fig, self.frm)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().grid(column=0, row=1)
+        self.questionLabel = ttk.Label(self.frm, text="Question!", background="#000fff000")
+        self.questionLabel.grid(column=0, row=1)
+
+        #self.questionCanvas = tkinter.Canvas(self.frm)
+        #self.questionIndicator = self.questionCanvas.create_oval(0, 0, 10, 10, fill='#000fff000')
+
+        self.figureCanvas = FigureCanvasTkAgg(self.fig, self.frm)
+        self.figureCanvas.draw()
+        self.figureCanvas.get_tk_widget().grid(column=0, row=2)
 
         self.temp = [0]
         self.temp_time = ['0']
@@ -68,6 +75,13 @@ class GUI:
     async def run_loop(self):
         self.dataLabel['text'] = f'Temperature: {self.temp[-1]}, Humidity: {self.hum[-1]}, Volume: {self.audio}'
 
+        if self.question:
+            self.questionLabel['background'] = '#000fff000'
+            self.questionLabel['text'] = 'Question!'
+        else:
+            self.questionLabel['background'] = '#eeeeeeeee'
+            self.questionLabel['text'] = 'No questions'
+
         self.avg_plot.clear()
         self.avg_plot.plot(self.avg_time, self.avg_temp, color='r', label='Temperature')
         self.avg_plot.plot(self.avg_time, self.avg_hum, color='b', label='Humidity')
@@ -76,7 +90,7 @@ class GUI:
         self.avg_plot.title.set_text('Average temperature and humidity')
         self.avg_plot.legend()
 
-        self.canvas.draw()
+        self.figureCanvas.draw()
         self.root.update()
 
         await asyncio.sleep(0.1)
@@ -106,7 +120,10 @@ class GUI:
         self.audio = self.db.get_most_recent('Audio')
 
     async def update_question(self):
-        self.question = 1
+        if self.question:
+            self.question = 0
+        else:
+            self.question = 1
 
     async def update_avg(self):
         if len(self.avg_temp) >= 10:

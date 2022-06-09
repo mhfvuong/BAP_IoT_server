@@ -40,8 +40,9 @@ class Server:
         await asyncio.sleep(wait_time)
 
         # generate a random message within the format
-        msg = f'color clock DATA: pubaddr receivedaddr {random.choice(["0x75", "0xa7", "0x79"])} ' \
-              f'{random.randint(100, 3000)} END'
+        msg = random.choice([f'color clock DATA: pubaddr receivedaddr {random.choice(["0x75", "0xa7", "0x79"])} '
+                             f'{random.randint(100, 3000)} END',
+                             f'{random.choice(["000", "001", "010", "011", "100", "101", "110", "111"])}00000'])
         print(msg)
         return msg
 
@@ -53,15 +54,15 @@ class Server:
         parsed_msg = msg.split()
 
         try:
-            if parsed_msg[2] == 'DATA:':
+            if parsed_msg[0][0:3] == '011':
+                self.publisher.publish('Question')
+
+            elif parsed_msg[2] == 'DATA:':
                 data_type = self.prop_id_translation.get(str(parsed_msg[5]))
                 data = self.preprocessing.process_func.get(data_type, lambda x: x)(parsed_msg[6])
                 if data is not None:
                     self.db.store(data_type, data)
                     self.publisher.publish(data_type)
-
-            elif parsed_msg[0][0:2] == '011':
-                self.publisher.publish('Question')
 
             else:
                 print('message not supported')
