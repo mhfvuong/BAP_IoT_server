@@ -22,7 +22,8 @@ class GUI:
         self.frm = ttk.Frame(self.root, padding=10)
         self.frm.grid()
 
-        ttk.Label(self.frm, text='Temperature: ..., Humidity: ..., Volume: ...').grid(column=0, row=0)
+        self.dataLabel = ttk.Label(self.frm, text='Temperature: ..., Humidity: ...')
+        self.dataLabel.grid(column=0, row=0)
         ttk.Button(self.frm, text='Exit', command=self.close_gui).grid(column=0, row=2)
 
         self.fig = Figure(figsize=(5, 4), dpi=100)
@@ -65,9 +66,7 @@ class GUI:
         self.todo.add(self.gui_tasks[1])
 
     async def run_loop(self):
-        #ttk.Label(self.frm, text=f'Temperature: {self.temp[-1]}, '
-        #                         f'Humidity: {self.hum[-1]}, '
-        #                         f'Volume: {self.audio}').grid(column=0, row=0)
+        self.dataLabel['text'] = f'Temperature: {self.temp[-1]}, Humidity: {self.hum[-1]}, Volume: {self.audio}'
 
         self.avg_plot.clear()
         self.avg_plot.plot(self.avg_time, self.avg_temp, color='r', label='Temperature')
