@@ -37,10 +37,10 @@ class GUI:
         self.avg_plot.plot()
 
         self.questionCanvas = Canvas(self.frm, height=10, width=10)
-        self.questionIndicator = self.questionCanvas.create_oval(0, 0, 10, 10, fill='#000fff000')
+        self.questionIndicator = self.questionCanvas.create_oval(0, 0, 10, 10, fill='#eeeeeeeee')
         self.questionCanvas.grid(column=0, row=1)
 
-        self.questionLabel = ttk.Label(self.frm, text="Question!", background="#000fff000")
+        self.questionLabel = ttk.Label(self.frm, text="No questions", background="#eeeeeeeee")
         self.questionLabel.grid(column=0, row=2)
 
         self.figureCanvas = FigureCanvasTkAgg(self.fig, self.frm)
@@ -86,9 +86,11 @@ class GUI:
         self.dataLabel['text'] = f'Temperature: {self.temp[-1]}, Humidity: {self.hum[-1]}, Volume: {self.audio}'
 
         if self.question:
+            self.questionCanvas.itemconfig(self.questionIndicator, fill="#000fff000")
             self.questionLabel['background'] = '#000fff000'
             self.questionLabel['text'] = 'Question!'
         else:
+            self.questionCanvas.itemconfig(self.questionIndicator, fill="#eeeeeeeee")
             self.questionLabel['background'] = '#eeeeeeeee'
             self.questionLabel['text'] = 'No questions'
 
@@ -99,8 +101,6 @@ class GUI:
         self.avg_plot.set_ylabel('Magnitude')
         self.avg_plot.title.set_text('Average temperature and humidity')
         self.avg_plot.legend()
-
-        self.questionIndicator = self.questionCanvas.create_oval(0, 0, 10, 10, fill='#000fff000')
 
         self.figureCanvas.draw()
         self.root.update()
@@ -132,7 +132,7 @@ class GUI:
         self.audio = self.db.get_most_recent('Audio')
 
     def update_question(self, msg):
-        if re.search("011..010", msg):
+        if re.match("011..010", msg):
             self.question = 1
             self.questionColor = self.colorDict[msg[-3:]]
         elif msg == "01000010":
