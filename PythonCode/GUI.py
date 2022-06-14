@@ -26,7 +26,7 @@ class GUI:
 
         self.dataLabel = ttk.Label(self.frm, text='Temperature: ..., Humidity: ...')
         self.dataLabel.grid(column=0, row=0)
-        ttk.Button(self.frm, text='Exit', command=self.close_gui).grid(column=0, row=3)
+        ttk.Button(self.frm, text='Exit', command=self.close_gui).grid(column=0, row=4)
 
         self.fig = Figure(figsize=(5, 4), dpi=100)
 
@@ -36,15 +36,16 @@ class GUI:
         self.avg_plot.set_ylabel('Magnitude')
         self.avg_plot.plot()
 
-        self.questionLabel = ttk.Label(self.frm, text="Question!", background="#000fff000")
-        self.questionLabel.grid(column=0, row=1)
+        self.questionCanvas = Canvas(self.frm, height=10, width=10)
+        self.questionIndicator = self.questionCanvas.create_oval(0, 0, 10, 10, fill='#000fff000')
+        self.questionCanvas.grid(column=0, row=1)
 
-        #self.questionCanvas = tkinter.Canvas(self.frm)
-        #self.questionIndicator = self.questionCanvas.create_oval(0, 0, 10, 10, fill='#000fff000')
+        self.questionLabel = ttk.Label(self.frm, text="Question!", background="#000fff000")
+        self.questionLabel.grid(column=0, row=2)
 
         self.figureCanvas = FigureCanvasTkAgg(self.fig, self.frm)
         self.figureCanvas.draw()
-        self.figureCanvas.get_tk_widget().grid(column=0, row=2)
+        self.figureCanvas.get_tk_widget().grid(column=0, row=3)
 
         self.temp = [0]
         self.temp_time = ['0']
@@ -59,6 +60,7 @@ class GUI:
         self.avg_time = ['0']
 
         self.question = 0
+        self.questionColor = "#eeeeeeeee"
 
         self.publisher.sub_list['Temperature'].append(self.update_temp)
         self.publisher.sub_list['Humidity'].append(self.update_hum)
@@ -89,6 +91,8 @@ class GUI:
         self.avg_plot.set_ylabel('Magnitude')
         self.avg_plot.title.set_text('Average temperature and humidity')
         self.avg_plot.legend()
+
+        self.questionIndicator = self.questionCanvas.create_oval(0, 0, 10, 10, fill='#000fff000')
 
         self.figureCanvas.draw()
         self.root.update()
@@ -122,6 +126,17 @@ class GUI:
     def update_question(self, msg):
         if re.search("011..010", msg):
             self.question = 1
+            color = msg[-3:-1]
+            if color == "000":
+                #RED
+                pass
+            elif color == "001":
+
+                pass
+            elif color == "010":
+                pass
+            elif color == "011":
+                pass
         elif msg == "01000010":
             self.question = 0
 

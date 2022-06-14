@@ -56,7 +56,7 @@ class Server:
 
         try:
             if parsed_msg[2] == 'DATA:':
-                data_type = self.prop_id_translation.get(str(parsed_msg[5]))
+                data_type = self.prop_id_translation.get(parsed_msg[5])
                 data = self.preprocessing.process_func.get(data_type, lambda x: x)(parsed_msg[6])
                 if data is not None:
                     self.db.store(data_type, data)
@@ -88,7 +88,7 @@ class Server:
             print(self.todo)
             # wait for a new message
             if self.operation_mode:
-                msg = await self.reader.readline()
+                msg = str(await self.reader.readline())
             else:
                 msg = await self.get_message()
 
