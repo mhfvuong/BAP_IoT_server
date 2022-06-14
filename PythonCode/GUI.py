@@ -60,6 +60,14 @@ class GUI:
         self.avg_time = ['0']
 
         self.question = 0
+        self.colorDict = {"000": "#FF0000",  # Red
+                          "001": "#FFA500",  # Orange
+                          "010": "#FFFF00",  # Yellow
+                          "011": "#00FF00",  # Green
+                          "100": "#00FFFF",  # Cyan
+                          "101": "#0000FF",  # Blue
+                          "110": "#800080",  # Purple
+                          "111": "#FFFFFF"}  # White
         self.questionColor = "#eeeeeeeee"
 
         self.publisher.sub_list['Temperature'].append(self.update_temp)
@@ -126,17 +134,7 @@ class GUI:
     def update_question(self, msg):
         if re.search("011..010", msg):
             self.question = 1
-            color = msg[-3:-1]
-            if color == "000":
-                #RED
-                pass
-            elif color == "001":
-
-                pass
-            elif color == "010":
-                pass
-            elif color == "011":
-                pass
+            self.questionColor = self.colorDict[msg[-3:]]
         elif msg == "01000010":
             self.question = 0
 
