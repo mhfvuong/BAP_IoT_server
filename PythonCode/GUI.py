@@ -86,7 +86,7 @@ class GUI:
         self.dataLabel['text'] = f'Temperature: {self.temp[-1]}, Humidity: {self.hum[-1]}, Volume: {self.audio}'
 
         if self.question:
-            self.questionCanvas.itemconfig(self.questionIndicator, fill="#000fff000")
+            self.questionCanvas.itemconfig(self.questionIndicator, fill=self.questionColor)
             self.questionLabel['background'] = '#000fff000'
             self.questionLabel['text'] = 'Question!'
         else:
