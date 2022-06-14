@@ -3,7 +3,7 @@ import asyncio
 
 class Publisher:
     def __init__(self, todo):
-        self.sub_list = {'Temperature': [], 'Humidity': [], 'Audio': [], 'Question': [], 'Close': []}
+        self.sub_list = {'Temperature': [], 'Humidity': [], 'Audio': [], 'Close': []}
 
         self.todo = todo
 

@@ -5,6 +5,7 @@ from matplotlib.figure import Figure
 from tkinter import *
 from tkinter import ttk
 import asyncio
+import re
 
 from analysis import Analysis
 
@@ -63,7 +64,6 @@ class GUI:
         self.publisher.sub_list['Humidity'].append(self.update_hum)
         self.publisher.sub_list['Audio'].append(self.update_audio)
         self.publisher.sub_list['Close'].append(self.exit)
-        self.publisher.sub_list['Question'].append(self.update_question)
 
     async def run(self):
         self.gui_tasks[0] = asyncio.create_task(self.run_loop(), name='gui_loop')
@@ -119,11 +119,11 @@ class GUI:
     async def update_audio(self):
         self.audio = self.db.get_most_recent('Audio')
 
-    async def update_question(self):
-        if self.question:
-            self.question = 0
-        else:
+    def update_question(self, msg):
+        if re.search("011..010", msg):
             self.question = 1
+        elif msg == "01000010":
+            self.question = 0
 
     async def update_avg(self):
         if len(self.avg_temp) >= 10:
